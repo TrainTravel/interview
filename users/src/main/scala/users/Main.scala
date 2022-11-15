@@ -8,16 +8,20 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.unmarshalling.Unmarshaller
 import cats.data._
 import cats.implicits._
+import io.circe.generic.auto._
 import io.circe.Json
+import io.circe.syntax._
 import users.domain.User._
 import users.config._
 import users.main._
 import users.services.UserRoutes
 
 import scala.io.StdIn
-import scala.util.{Success, Failure}
+import scala.util.{Failure, Success}
 
 object Main extends App {
+  implicit val system = ActorSystem(Behaviors.empty, "my-system")
+  implicit val executionContext = system.executionContext
 
   val config = ApplicationConfig(
     executors = ExecutorsConfig(
@@ -39,17 +43,14 @@ object Main extends App {
   lazy val routes = pathPrefix("users")(getUser)
 
   def getUser: Route = get {
-    path(ID) { id =>
-      onComplete(service.get(id)) {
-        case Success(user) => complete(Json.obj("user" := user))
+    path(Segment) { id =>
+      onComplete(service.get(Id(id))) {
+        case Success(Right(user)) => complete
         case Failure(exception) => ???
       }
     }
   }
 
-
-  implicit val system = ActorSystem(Behaviors.empty, "my-system")
-  implicit val executionContext = system.executionContext
 
   val bindingFuture = Http().newServerAt("localhost", 8080).bind(routes)
 

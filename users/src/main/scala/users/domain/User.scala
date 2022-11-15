@@ -1,11 +1,13 @@
 package users.domain
 
 import java.time.OffsetDateTime
-
 import akka.http.scaladsl.server._
 import cats.kernel.Eq
 import cats.implicits._
+import cats.syntax.functor._
 import com.softwaremill.quicklens._
+import io.circe.generic.semiauto.{deriveEncoder, deriveDecoder}
+import io.circe.Encoder
 
 final case class User(
     id: User.Id,
@@ -52,6 +54,11 @@ object User {
   final case class Id(value: String) extends AnyVal
 
   val ID: PathMatcher1[Id] = PathMatcher[String]
+
+  implicit val idCirceEncoder: Encoder[Id] = Encoder[String].contramap(_.value)
+
+  implicit val userCirceEncoder: Encoder[User] = deriveEncoder
+
 
   final case class Metadata(
       version: Int,

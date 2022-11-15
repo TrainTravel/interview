@@ -21,5 +21,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka"          %% "akka-http" % "10.4.0",
   "com.typesafe.akka"          %% "akka-actor-typed" % "2.6.20",
   "io.circe"                   %% "circe-core"    % "0.14.1",
+  "io.circe"                   %% "circe-generic" % "0.14.1",
   compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 )
