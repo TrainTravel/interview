@@ -2,6 +2,7 @@ package users.domain
 
 import java.time.OffsetDateTime
 
+import akka.http.scaladsl.server._
 import cats.kernel.Eq
 import cats.implicits._
 import com.softwaremill.quicklens._
@@ -49,6 +50,8 @@ object User {
   ): User = User(id, userName, emailAddress, password, Metadata(1, at, at, None, None))
 
   final case class Id(value: String) extends AnyVal
+
+  val ID: PathMatcher1[Id] = PathMatcher[String]
 
   final case class Metadata(
       version: Int,
