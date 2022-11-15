@@ -5,10 +5,17 @@ import akka.actor.typed.scaladsl.Behaviors
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.model.ContentTypes._
+import akka.http.scaladsl.model.MessageEntity
+import akka.http.scaladsl.marshalling._
+import akka.http.scaladsl.marshalling.ToEntityMarshaller
 import akka.http.scaladsl.unmarshalling.Unmarshaller
 import cats.data._
 import cats.implicits._
 import io.circe.generic.auto._
+import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
+import io.circe.generic.auto._
+import io.circe.Encoder
 import io.circe.Json
 import io.circe.syntax._
 import users.domain.User._
@@ -16,12 +23,15 @@ import users.config._
 import users.main._
 import users.services.UserRoutes
 
+import scala.concurrent.Future
 import scala.io.StdIn
 import scala.util.{Failure, Success}
 
 object Main extends App {
   implicit val system = ActorSystem(Behaviors.empty, "my-system")
   implicit val executionContext = system.executionContext
+//  implicit def toJsonEntityMarshaller[T: Encoder]: ToEntityMarshaller[T] =
+//    Marshaller.MessageEntityMarshaller.compose(MessageEntit)
 
   val config = ApplicationConfig(
     executors = ExecutorsConfig(
@@ -45,12 +55,11 @@ object Main extends App {
   def getUser: Route = get {
     path(Segment) { id =>
       onComplete(service.get(Id(id))) {
-        case Success(Right(user)) => complete
+        case Success(user) => complete(200, user)
         case Failure(exception) => ???
       }
     }
   }
-
 
   val bindingFuture = Http().newServerAt("localhost", 8080).bind(routes)
 

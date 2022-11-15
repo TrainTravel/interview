@@ -53,7 +53,10 @@ object User {
 
   final case class Id(value: String) extends AnyVal
 
-  val ID: PathMatcher1[Id] = PathMatcher[String]
+  implicit val idCirceEncoder: Encoder[Id] = Encoder[String].contramap(_.value)
+
+//  implicit val userCirceEncoder: Encoder[User] = deriveEncoder
+
 
   implicit val idCirceEncoder: Encoder[Id] = Encoder[String].contramap(_.value)
 
