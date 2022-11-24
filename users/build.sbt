@@ -17,7 +17,7 @@ resolvers +=
 
 libraryDependencies ++= Seq(
   "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
-  "org.typelevel"              %% "cats-core" % "1.0.0-MF",
+  "org.typelevel"              %% "cats-core" % "2.6.1",
   "com.typesafe.akka"          %% "akka-http" % "10.2.8",
   "com.typesafe.akka"          %% "akka-stream" % "2.6.20",
   "com.typesafe.akka"          %% "akka-actor-typed" % "2.6.20",

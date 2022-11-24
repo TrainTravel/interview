@@ -6,8 +6,9 @@ import cats.kernel.Eq
 import cats.implicits._
 import cats.syntax.functor._
 import com.softwaremill.quicklens._
-import io.circe.generic.semiauto.{deriveEncoder, deriveDecoder}
-import io.circe.Encoder
+import io.circe.generic.auto._
+import io.circe.syntax.EncoderOps
+import io.circe.{Decoder, Encoder}
 
 final case class User(
     id: User.Id,
@@ -42,7 +43,12 @@ final case class User(
     User.delete(this, at)
 }
 
+
+
 object User {
+//  val user1 = User(User.Id("1"), UserName("name1"), EmailAddress("name1@gmail.com"), None, User.Metadata(1, OffsetDateTime.now(), OffsetDateTime.now(), None, None))
+//  user1.asJson
+
   def apply(
       id: User.Id,
       userName: UserName,
@@ -56,12 +62,6 @@ object User {
   implicit val idCirceEncoder: Encoder[Id] = Encoder[String].contramap(_.value)
 
 //  implicit val userCirceEncoder: Encoder[User] = deriveEncoder
-
-
-  implicit val idCirceEncoder: Encoder[Id] = Encoder[String].contramap(_.value)
-
-  implicit val userCirceEncoder: Encoder[User] = deriveEncoder
-
 
   final case class Metadata(
       version: Int,
