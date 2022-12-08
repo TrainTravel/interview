@@ -60,13 +60,15 @@ final class DefaultInterpreter private[usermanagement] (
         userRepository.getByUserName(userName).map(Right.apply)
       }
       id ← EitherT[Future, Error, Id](generateId().map(Right.apply))
+
+      // EitherT[Future, Error, User]
       result ← EitherT.fromEither[Future] {
         if (maybeUser.nonEmpty) Left(Error.Exists: Error)
         else
           Right(User(id, userName, emailAddress, password, OffsetDateTime.now()))
       }
       _ ← EitherT(save(result))
-    } yield result).value
+    } yield result).value // F[Either[Error, User]] => Future[Either[Error, User]]
 
   def updateEmail(
       id: Id,

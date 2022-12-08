@@ -61,21 +61,23 @@ object Main extends App {
     } ~
     post {
       entity(as[CreateUser]) { req =>
-        println(req.asJson)
         onComplete(
           service
+            // Try[Either[Error, User]]
             .signUp(
               UserName(req.userName),
               EmailAddress(req.emailAddress),
               req.password.map(Password)
             )
         ) {
-          case Success(Right(user)) => complete((StatusCodes.Created, user))
-          case Success(Left(e)) => complete(e)
-          case Failure(e) => complete(e)
+          case Success(Right(user)) => complete((StatusCodes.Created, s"User ${user.userName} successfully created!"))
+          case Success(Left(Error.Exists)) => complete((StatusCodes.Conflict, "Sorry, this username is already taken, please choose another username."))
+          case Success(Left(e)) => complete((StatusCodes.BadRequest, e))
+          case Failure(e) => complete((StatusCodes.BadRequest, e))
           }
         }
     }
+
   }
 
   val bindingFuture = Http().newServerAt("localhost", 8080).bind(routes)
